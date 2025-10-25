@@ -1,11 +1,9 @@
-<script lang="ts" setup>
-
-</script>
-
 <template>
     <div class="app dark:bg-slate-900">
-        <NuxtLayout name="default">
-            <NuxtPage />
-        </NuxtLayout>
+        <UApp>
+            <NuxtLayout name="default">
+                <NuxtPage />
+            </NuxtLayout>
+        </UApp>
     </div>
 </template>

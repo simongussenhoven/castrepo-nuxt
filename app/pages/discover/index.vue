@@ -1,7 +1,10 @@
-<script lang="ts" setup>
-// const { data } = await useFetch('/api/hello')
-</script>
-
 <template>
-    Discover!
+    <div class="text-lime-300">
+        HELLOOO!!
+        HELLOOO!!
+        HELLOOO!!
+        HELLOOO!!
+        HELLOOO!!
+        <!-- <UButton label="Open" color="neutral" variant="subtle" /> -->
+    </div>
 </template>
