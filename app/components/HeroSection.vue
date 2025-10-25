@@ -13,7 +13,7 @@
                     create custom playlists, and never miss an episode with our smart recommendations.
                 </p>
                 <div class="flex flex-wrap gap-4 justify-center md:justify-start">
-                    <USlideover title="Slideover with close button">
+                    <USlideover title="Search for podcasts">
                         <UButton label="Search podcasts" color="warning" variant="solid" />
                         <template #body>
                             <div class="flex flex-col h-full">
