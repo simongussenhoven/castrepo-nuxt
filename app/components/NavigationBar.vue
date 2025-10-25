@@ -1,0 +1,27 @@
+<template>
+    <nav class="fixed z-50 bg-white shadow-md top-0 left-0 right-0 max-[768px]:top-auto max-[768px]:bottom-0">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16 max-[768px]:h-14">
+            <div class="max-[768px]:hidden">
+                <NuxtLink to="/" class="text-xl font-bold text-gray-900 hover:text-gray-700">
+                    Brand
+                </NuxtLink>
+            </div>
+
+            <div
+                class="hidden md:flex space-x-8 max-[768px]:flex max-[768px]:justify-around max-[768px]:w-full max-[768px]:space-x-0">
+                <NuxtLink to="/"
+                    class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium max-[768px]:flex max-[768px]:flex-col max-[768px]:items-center max-[768px]:text-xs max-[768px]:py-1">
+                    Home</NuxtLink>
+                <NuxtLink to="/discover"
+                    class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium max-[768px]:flex max-[768px]:flex-col max-[768px]:items-center max-[768px]:text-xs max-[768px]:py-1">
+                    Discover</NuxtLink>
+                <!-- <NuxtLink to="/services"
+                    class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium max-[768px]:flex max-[768px]:flex-col max-[768px]:items-center max-[768px]:text-xs max-[768px]:py-1">
+                    Services</NuxtLink>
+                <NuxtLink to="/contact"
+                    class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium max-[768px]:flex max-[768px]:flex-col max-[768px]:items-center max-[768px]:text-xs max-[768px]:py-1">
+                    Contact</NuxtLink> -->
+            </div>
+        </div>
+    </nav>
+</template>
