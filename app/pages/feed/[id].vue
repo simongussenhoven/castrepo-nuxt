@@ -18,6 +18,7 @@ useSeoMeta({
 <template>
     <div class="md:mt-18 container mx-auto">
         <PodcastFeedDetails v-if="podcastData?.feed" :podcast="podcastData?.feed" />
-        <PodcastEpisodeList v-if="podcastData?.feed" :id="podcastData?.feed?.id" :max="podcastData.feed.episodeCount" />
+        <PodcastEpisodeList v-if="podcastData?.feed" :id="podcastData?.feed?.id" :max="podcastData.feed.episodeCount"
+            :feedImage="podcastData?.feed?.image" />
     </div>
 </template>
