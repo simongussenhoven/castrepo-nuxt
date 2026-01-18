@@ -37,6 +37,14 @@ const formatFileSize = (bytes: number) => {
     }
     return `${mb.toFixed(2)} MB`;
 };
+
+const emit = defineEmits<{ close: [boolean] }>()
+const playerStore = usePlayerStore();
+const onClickPlay = () => {
+    playerStore.playEpisode(props.episode);
+    emit('close', false);
+    console.log('Playing episode:', props.episode.title);
+}
 </script>
 
 <template>
@@ -107,7 +115,7 @@ const formatFileSize = (bytes: number) => {
 
         <!-- Play Button -->
         <div v-if="episode.enclosureUrl" class="flex gap-2">
-            <UButton icon="i-heroicons-play" size="lg" color="primary" label="Play Episode" />
+            <UButton icon="i-heroicons-play" size="lg" color="primary" label="Play Episode" @click="onClickPlay" />
         </div>
 
         <!-- Episode Description -->

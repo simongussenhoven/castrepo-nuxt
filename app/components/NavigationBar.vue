@@ -1,6 +1,5 @@
 <template>
-    <nav
-        class="fixed z-50 text-white shadow-md top-0 left-0 right-0 max-[768px]:top-auto max-[768px]:bottom-0  mx-auto bg-slate-800">
+    <nav class="fixed top-0 left-0 right-0 z-50 text-white shadow-md mx-auto bg-slate-800">
         <div class="px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16 max-[768px]:h-14 container mx-auto">
             <div class="max-[768px]:hidden">
                 <NuxtLink to="/" class="text-xl font-bold text-white hover:text-gray-700">
