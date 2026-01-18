@@ -6,6 +6,10 @@ defineProps<{
     feedImage?: string;
 }>();
 
+defineEmits<{
+    select: [episode: PodcastEpisode];
+}>();
+
 // Helper function to format duration from seconds to HH:MM:SS or MM:SS
 const formatDuration = (seconds: number): string => {
     if (!seconds || seconds === 0) return '';
@@ -32,7 +36,7 @@ const formatFileSize = (bytes: number): string => {
 </script>
 
 <template>
-    <UCard class="mb-4">
+    <UCard class="mb-4" @click="$emit('select', episode)">
         <template #header>
             <div class="flex items-center justify-between">
                 <div class="flex items-start space-x-4">
