@@ -8,12 +8,12 @@ export default defineEventHandler(async (event) => {
     const since = (query.since as string) || ''; // Timestamp for pagination
 
     const headers = createPodcastAPIHeaders(config);
-    
+
     let url = `https://api.podcastindex.org/api/1.0/episodes/byfeedid?id=${id}&max=${max}&pretty`;
     if (since) {
         url += `&since=${since}`;
     }
-    
+
     const response = await $fetch(url, {
         headers,
     });
