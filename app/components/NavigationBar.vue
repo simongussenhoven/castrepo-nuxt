@@ -17,6 +17,7 @@
                     class="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium max-[768px]:flex max-[768px]:flex-col max-[768px]:items-center max-[768px]:text-xs max-[768px]:py-1">
                     Discover
                 </NuxtLink>
+                <NavigationUser />
             </div>
         </div>
     </nav>

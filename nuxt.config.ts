@@ -30,13 +30,17 @@ export default defineNuxtConfig({
     },
     devtools: { enabled: true },
     modules: [
-      '@nuxt/eslint',
-      '@nuxt/image',
-      '@nuxt/ui',
-      '@nuxt/test-utils',
-      'nuxt-lodash',
-      '@pinia/nuxt'
+        '@nuxt/eslint',
+        '@nuxt/image',
+        '@nuxt/ui',
+        '@nuxt/test-utils',
+        'nuxt-lodash',
+        '@pinia/nuxt',
+        '@nuxtjs/supabase'
     ],
+    supabase: {
+        redirect: false
+    },
     css: ['~/assets/css/main.css'],
     vite: {
         plugins: [
