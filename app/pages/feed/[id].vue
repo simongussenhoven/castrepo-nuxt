@@ -28,8 +28,8 @@ useSeoMeta({
         <!-- Content -->
         <template v-else>
             <PodcastFeedDetails v-if="podcastData?.feed" :podcast="podcastData?.feed" />
-            <PodcastEpisodeList v-if="podcastData?.feed" :id="podcastData?.feed?.id" :max="podcastData.feed.episodeCount"
-                :feedImage="podcastData?.feed?.image" />
+            <PodcastEpisodeList v-if="podcastData?.feed" :id="podcastData?.feed?.id"
+                :max="podcastData.feed.episodeCount" :feedImage="podcastData?.feed?.image" />
         </template>
     </div>
 </template>

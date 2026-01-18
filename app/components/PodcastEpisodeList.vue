@@ -25,13 +25,13 @@ hasMore.value = (initialData?.items?.length || 0) >= 20
 // Load more episodes
 async function loadMore() {
     if (loading.value || !hasMore.value || allEpisodes.value.length === 0) return
-    
+
     loading.value = true
-    
+
     try {
         const oldestEpisode = allEpisodes.value[allEpisodes.value.length - 1]
         const since = oldestEpisode.datePublished - 1 // Subtract 1 to exclude the last loaded episode
-        
+
         const response = await $fetch<PodcastEpisodesResponse>('/api/podcasts/getEpisodesByFeedId', {
             query: {
                 id: props.id,
@@ -39,7 +39,7 @@ async function loadMore() {
                 since: since.toString(),
             },
         })
-        
+
         if (response?.items && response.items.length > 0) {
             allEpisodes.value.push(...response.items)
             hasMore.value = response.items.length >= 20
@@ -57,21 +57,21 @@ async function loadMore() {
 // Intersection Observer
 onMounted(() => {
     if (!loadMoreTrigger.value) return
-    
+
     const observer = new IntersectionObserver(
         (entries) => {
             if (entries[0].isIntersecting && hasMore.value && !loading.value) {
                 loadMore()
             }
         },
-        { 
+        {
             threshold: 0.1,
             rootMargin: '0px 0px 200px 0px' // Trigger 200px before the element comes into view
         }
     )
-    
+
     observer.observe(loadMoreTrigger.value)
-    
+
     onUnmounted(() => {
         observer.disconnect()
     })
@@ -95,7 +95,7 @@ const open = async (episode: PodcastEpisode) => {
     <div class="py-3 pb-32">
         <PodcastEpisodeItem v-for="episode in allEpisodes" :key="episode.id" :episode="episode" :feedImage
             @select="open" />
-        
+
         <!-- Loading trigger -->
         <div ref="loadMoreTrigger" class="py-8">
             <div v-if="loading" class="flex justify-center">
