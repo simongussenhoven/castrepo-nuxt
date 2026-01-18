@@ -38,84 +38,61 @@ const formatFileSize = (bytes: number) => {
     return `${mb.toFixed(2)} MB`;
 };
 
-const emit = defineEmits<{ close: [boolean] }>()
+const emit = defineEmits<{ close: [] }>()
 const playerStore = usePlayerStore();
 const onClickPlay = () => {
     playerStore.playEpisode(props.episode);
-    emit('close', false);
-    console.log('Playing episode:', props.episode.title);
+    emit('close');
 }
 </script>
 
 <template>
     <div class="space-y-6">
-        <!-- Episode Title with Background Image -->
-        <div class="relative w-full h-64 rounded-lg overflow-hidden shadow-lg"
-            :style="episode.image ? `background-image: url('${episode.image}'); background-size: cover; background-position: center;` : ''">
-            <div class="absolute inset-0 bg-linear-to-t from-black/80 via-black/40 to-transparent"></div>
-            <div class="absolute bottom-0 left-0 right-0 p-6">
-                <h2 class="text-2xl font-bold text-white">
+        <!-- Episode Title with Image -->
+        <div class="flex gap-4 items-center">
+            <img v-if="episode.image" :src="episode.image" :alt="episode.title"
+                class="w-24 h-24 rounded-lg object-cover shrink-0" />
+            <div class="flex-1 min-w-0">
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
                     {{ episode.title }}
                 </h2>
-                <p class="text-sm text-gray-200 mt-1">
+                <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
                     {{ episode.datePublishedPretty }}
                 </p>
-            </div>
-        </div>
 
-        <!-- Episode Metadata -->
-        <div class="grid grid-cols-2 gap-4">
-            <div v-if="episode.duration" class="flex flex-col">
-                <span class="text-xs text-gray-500 dark:text-gray-400 uppercase">Duration</span>
-                <span class="text-sm font-medium text-gray-900 dark:text-white">
-                    {{ formatDuration(episode.duration) }}
-                </span>
-            </div>
-
-            <div v-if="episode.datePublished" class="flex flex-col">
-                <span class="text-xs text-gray-500 dark:text-gray-400 uppercase">Published</span>
-                <span class="text-sm font-medium text-gray-900 dark:text-white">
-                    {{ formatDate(episode.datePublished) }}
-                </span>
-            </div>
-
-            <div v-if="episode.season" class="flex flex-col">
-                <span class="text-xs text-gray-500 dark:text-gray-400 uppercase">Season</span>
-                <span class="text-sm font-medium text-gray-900 dark:text-white">
-                    {{ episode.season }}
-                </span>
-            </div>
-
-            <div v-if="episode.episode" class="flex flex-col">
-                <span class="text-xs text-gray-500 dark:text-gray-400 uppercase">Episode</span>
-                <span class="text-sm font-medium text-gray-900 dark:text-white">
-                    {{ episode.episode }}
-                </span>
+                <!-- Episode Metadata -->
+                <div class="flex flex-wrap gap-x-4 gap-y-1 mt-3 text-xs text-gray-500 dark:text-gray-400">
+                    <span v-if="episode.duration" class="flex items-center gap-1">
+                        <Icon name="i-heroicons-clock" class="w-3 h-3" />
+                        {{ formatDuration(episode.duration) }}
+                    </span>
+                    <span v-if="episode.season" class="flex items-center gap-1">
+                        <Icon name="i-heroicons-film" class="w-3 h-3" />
+                        S{{ episode.season }}<template v-if="episode.episode">E{{ episode.episode }}</template>
+                    </span>
+                    <span v-else-if="episode.episode" class="flex items-center gap-1">
+                        <Icon name="i-heroicons-hashtag" class="w-3 h-3" />
+                        Ep. {{ episode.episode }}
+                    </span>
+                    <span v-if="episode.episodeType" class="flex items-center gap-1">
+                        <Icon name="i-heroicons-microphone" class="w-3 h-3" />
+                        {{ episode.episodeType }}
+                    </span>
+                    <span v-if="episode.enclosureLength" class="flex items-center gap-1">
+                        <Icon name="i-heroicons-arrow-down-tray" class="w-3 h-3" />
+                        {{ formatFileSize(episode.enclosureLength) }}
+                    </span>
+                </div>
             </div>
 
-            <div v-if="episode.episodeType" class="flex flex-col">
-                <span class="text-xs text-gray-500 dark:text-gray-400 uppercase">Type</span>
-                <span class="text-sm font-medium text-gray-900 dark:text-white">
-                    {{ episode.episodeType }}
-                </span>
-            </div>
-
-            <div v-if="episode.enclosureLength" class="flex flex-col">
-                <span class="text-xs text-gray-500 dark:text-gray-400 uppercase">File Size</span>
-                <span class="text-sm font-medium text-gray-900 dark:text-white">
-                    {{ formatFileSize(episode.enclosureLength) }}
-                </span>
-            </div>
+            <!-- Play Button -->
+            <UButton v-if="episode.enclosureUrl" icon="i-heroicons-play" size="xl" color="primary"
+                class="shrink-0 rounded-full" @click="onClickPlay" />
         </div>
 
         <!-- Explicit Badge -->
         <div v-if="episode.explicit" class="inline-flex">
             <UBadge color="warning" variant="subtle">Explicit</UBadge>
-        </div>
-
-        <!-- Play Button -->
-        <div v-if="episode.enclosureUrl" class="flex gap-2">
-            <UButton icon="i-heroicons-play" size="lg" color="primary" label="Play Episode" @click="onClickPlay" />
         </div>
 
         <!-- Episode Description -->

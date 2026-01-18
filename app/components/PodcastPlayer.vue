@@ -1,9 +1,12 @@
 <script setup lang="ts">
-const playerStore = usePlayerStore();
+import PodcastPlayerSlideover from './PodcastPlayerSlideover.vue';
 
+const playerStore = usePlayerStore();
 const currentTime = ref(0);
 const duration = ref(0);
 const audioRef = ref<HTMLAudioElement | null>(null);
+
+
 
 onMounted(() => {
     if (audioRef.value) {
@@ -54,6 +57,13 @@ const seek = (event: MouseEvent) => {
 
     audioRef.value.currentTime = newTime;
 };
+
+const overlay = useOverlay();
+const openPlayerSlideover = async () => {
+    console.log('Opening player slideover');
+    const slideover = overlay.create(PodcastPlayerSlideover);
+    await slideover.open();
+};
 </script>
 
 <template>
@@ -61,7 +71,7 @@ const seek = (event: MouseEvent) => {
     <audio ref="audioRef" />
 
     <!-- Only show player when there's an episode -->
-    <div v-if="playerStore.currentEpisode"
+    <div v-if="playerStore.currentEpisode" @click="openPlayerSlideover"
         class="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 shadow-lg z-50">
         <!-- Progress bar -->
         <div class="h-1 bg-gray-200 dark:bg-gray-700 cursor-pointer hover:h-2 transition-all" @click="seek">
@@ -74,7 +84,7 @@ const seek = (event: MouseEvent) => {
                 <!-- Episode artwork -->
                 <img v-if="playerStore.currentEpisode.image || playerStore.currentEpisode.feedImage"
                     :src="playerStore.currentEpisode.image || playerStore.currentEpisode.feedImage"
-                    :alt="playerStore.currentEpisode.title" class="w-14 h-14 rounded object-cover flex-shrink-0" />
+                    :alt="playerStore.currentEpisode.title" class="w-14 h-14 rounded object-cover shrink-0" />
 
                 <!-- Episode info -->
                 <div class="flex-1 min-w-0">
@@ -87,15 +97,8 @@ const seek = (event: MouseEvent) => {
                 </div>
 
                 <!-- Play/Pause button -->
-                <button @click="playerStore.togglePlayPause()"
-                    class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-600 hover:bg-blue-700 text-white transition-colors flex-shrink-0">
-                    <svg v-if="playerStore.isPlaying" class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
-                    </svg>
-                    <svg v-else class="w-6 h-6 ml-1" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M8 5v14l11-7z" />
-                    </svg>
-                </button>
+                <UButton :icon="playerStore.isPlaying ? 'i-heroicons-pause' : 'i-heroicons-play'" color="primary"
+                    size="xl" class="shrink-0 rounded-full" @click="playerStore.togglePlayPause()" />
             </div>
         </div>
     </div>

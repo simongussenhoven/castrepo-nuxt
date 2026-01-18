@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { PodcastEpisode } from '~~/types/podcasts';
 
-defineProps<{
+const props = defineProps<{
     episode: PodcastEpisode;
     feedImage?: string;
 }>();
@@ -9,6 +9,11 @@ defineProps<{
 defineEmits<{
     select: [episode: PodcastEpisode];
 }>();
+
+const playerStore = usePlayerStore();
+const onClickPlay = () => {
+    playerStore.playEpisode(props.episode);
+};
 
 // Helper function to format duration from seconds to HH:MM:SS or MM:SS
 const formatDuration = (seconds: number): string => {
@@ -93,8 +98,9 @@ const formatFileSize = (bytes: number): string => {
                         </div>
                     </div>
                 </div>
-                <div class="ml-4 mt-2 bg-purple-700 rounded-full p-2">
-                    <UIcon name="i-heroicons-play" class="w-6 h-6 text-gray-400" />
+                <div class="ml-4 mt-2 bg-green-400 rounded-full p-2" @click.stop>
+                    <UButton icon="i-heroicons-play" color="primary" size="xl" class="shrink-0 rounded-full"
+                        @click="onClickPlay" />
                 </div>
             </div>
         </template>

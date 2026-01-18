@@ -10,13 +10,19 @@
 
                 <!-- Podcast Info -->
                 <div class="flex-1 min-w-0">
-                    <div class="flex justify-between items-start mb-2">
+                    <div class="flex justify-between items-start mb-2 gap-2">
                         <h3 class="font-semibold text-lg text-gray-900 dark:text-white line-clamp-2 leading-tight">
                             {{ podcast.title }}
                         </h3>
-                        <UBadge v-if="podcast.explicit" color="warning" variant="soft" size="xs" class="ml-2 shrink-0">
-                            Explicit
-                        </UBadge>
+                        <div class="flex items-center gap-2 shrink-0">
+                            <UBadge v-if="podcast.explicit" color="warning" variant="soft" size="xs">
+                                Explicit
+                            </UBadge>
+                            <UButton :icon="isSubscribed ? 'i-heroicons-check' : 'i-heroicons-plus'"
+                                :color="isSubscribed ? 'neutral' : 'primary'"
+                                :variant="isSubscribed ? 'outline' : 'solid'" size="xs" :loading="loading"
+                                @click="toggleSubscription" />
+                        </div>
                     </div>
 
                     <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">
@@ -57,6 +63,16 @@ interface Props {
 
 const props = defineProps<Props>()
 
+const podcastData = computed(() => ({
+    id: props.podcast.id,
+    title: props.podcast.title,
+    image: props.podcast.image,
+    url: props.podcast.url,
+    podcastGuid: props.podcast.podcastGuid
+}))
+
+const { isSubscribed, loading, toggleSubscription: toggle } = useSubscription(podcastData)
+
 const lastUpdated = computed(() => {
     if (!props.podcast.lastUpdateTime) return null
 
@@ -70,6 +86,13 @@ const lastUpdated = computed(() => {
     if (diffInDays < 30) return `${Math.floor(diffInDays / 7)} weeks ago`
     return `${Math.floor(diffInDays / 30)} months ago`
 })
+
+// Wrapper to prevent navigation on button click
+function toggleSubscription(event: Event) {
+    event.preventDefault()
+    event.stopPropagation()
+    toggle()
+}
 </script>
 
 <style scoped>

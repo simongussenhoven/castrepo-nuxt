@@ -1,3 +1,4 @@
+git mer
 <script setup lang="ts">
 import type { DropdownMenuItem } from '@nuxt/ui'
 
