@@ -60,7 +60,7 @@ const items = computed<DropdownMenuItem[]>(() => {
         }" :ui="{
             content: 'w-48'
         }">
-            <UButton icon="i-lucide-user" color="neutral" variant="outline" size="lg" />
+            <UButton :icon="user ? 'i-lucide-user' : 'i-lucide-key'" color="neutral" variant="outline" size="lg" />
         </UDropdownMenu>
     </div>
 </template>
