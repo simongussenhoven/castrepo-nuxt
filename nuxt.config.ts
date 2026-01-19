@@ -19,9 +19,9 @@ export default defineNuxtConfig({
         upperAfterPrefix: false,
         exclude: ["map"],
         alias: [
-            ["camelCase", "stringToCamelCase"], // => stringToCamelCase
-            ["kebabCase", "stringToKebab"], // => stringToKebab
-            ["isDate", "isLodashDate"], // => _isLodashDate
+            ["camelCase", "stringToCamelCase"],
+            ["kebabCase", "stringToKebab"],
+            ["isDate", "isLodashDate"],
         ],
     },
     runtimeConfig: {

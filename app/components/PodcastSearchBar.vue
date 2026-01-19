@@ -28,7 +28,6 @@
 
 <script setup lang="ts">
 import { type PodcastSearchResponse } from '../../types/podcasts';
-import _ from 'lodash';
 
 const emit = defineEmits<{ close: [boolean] }>()
 
@@ -53,7 +52,7 @@ const searchPodcasts = async (term: string) => {
     }
 }
 
-const debouncedSearch = _.debounce((term: string) => {
+const debouncedSearch = _debounce((term: string) => {
     searchPodcasts(term);
 }, 1000);
 
