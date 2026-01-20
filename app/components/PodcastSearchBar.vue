@@ -27,6 +27,7 @@
 </template>
 
 <script setup lang="ts">
+import { useDebounceFn } from '@vueuse/core';
 import { type PodcastSearchResponse } from '../../types/podcasts';
 
 const emit = defineEmits<{ close: [boolean] }>()
@@ -52,7 +53,7 @@ const searchPodcasts = async (term: string) => {
     }
 }
 
-const debouncedSearch = _debounce((term: string) => {
+const debouncedSearch = useDebounceFn((term: string) => {
     searchPodcasts(term);
 }, 1000);
 

@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: castrepo-nuxt
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NUXT_PCI_API_KEY=${NUXT_PCI_API_KEY}
+      - NUXT_PCI_API_SECRET=${NUXT_PCI_API_SECRET}
+      - NUXT_PUBLIC_SUPABASE_URL=${NUXT_PUBLIC_SUPABASE_URL}
+      - NUXT_PUBLIC_SUPABASE_KEY=${NUXT_PUBLIC_SUPABASE_KEY}
+    restart: unless-stopped
+    networks:
+      - castrepo-network
+
+networks:
+  castrepo-network:
+    driver: bridge

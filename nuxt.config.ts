@@ -13,20 +13,13 @@ export default defineNuxtConfig({
             styles: ['normal']
         }
     },
-    lodash: {
-        prefix: "_",
-        prefixSkip: ["string"],
-        upperAfterPrefix: false,
-        exclude: ["map"],
-        alias: [
-            ["camelCase", "stringToCamelCase"],
-            ["kebabCase", "stringToKebab"],
-            ["isDate", "isLodashDate"],
-        ],
-    },
     runtimeConfig: {
         pciApiKey: process.env.NUXT_PCI_API_KEY,
         pciApiSecret: process.env.NUXT_PCI_API_SECRET,
+        public: {
+            supabaseUrl: process.env.NUXT_PUBLIC_SUPABASE_URL,
+            supabaseKey: process.env.NUXT_PUBLIC_SUPABASE_KEY,
+        },
     },
     devtools: { enabled: true },
     modules: [
@@ -34,9 +27,9 @@ export default defineNuxtConfig({
         '@nuxt/image',
         '@nuxt/ui',
         '@nuxt/test-utils',
-        'nuxt-lodash',
         '@pinia/nuxt',
-        '@nuxtjs/supabase'
+        '@nuxtjs/supabase',
+        '@vueuse/nuxt'
     ],
     supabase: {
         redirect: false,

@@ -1,0 +1,14 @@
+node_modules
+.nuxt
+.output
+.git
+.vscode
+.env
+.env.local
+*.log
+dist
+coverage
+.cache
+.temp
+.tmp
+pnpm-lock.yaml
