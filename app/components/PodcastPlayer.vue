@@ -2,8 +2,6 @@
 import PodcastPlayerSlideover from './PodcastPlayerSlideover.vue';
 
 const playerStore = usePlayerStore();
-const currentTime = ref(0);
-const duration = ref(0);
 const audioRef = ref<HTMLAudioElement | null>(null);
 
 
@@ -25,13 +23,13 @@ onUnmounted(() => {
 
 const updateProgress = () => {
     if (audioRef.value) {
-        currentTime.value = audioRef.value.currentTime;
+        playerStore.currentTime = audioRef.value.currentTime;
     }
 };
 
 const updateDuration = () => {
     if (audioRef.value) {
-        duration.value = audioRef.value.duration;
+        playerStore.duration = audioRef.value.duration;
     }
 };
 
@@ -43,25 +41,29 @@ const formatTime = (seconds: number) => {
 };
 
 const progress = computed(() => {
-    return duration.value > 0 ? (currentTime.value / duration.value) * 100 : 0;
+    return playerStore.duration > 0 ? (playerStore.currentTime / playerStore.duration) * 100 : 0;
 });
 
 const seek = (event: MouseEvent) => {
-    if (!audioRef.value || !duration.value) return;
+    if (!audioRef.value || !playerStore.duration) return;
 
     const progressBar = event.currentTarget as HTMLElement;
     const rect = progressBar.getBoundingClientRect();
     const clickX = event.clientX - rect.left;
     const percentage = clickX / rect.width;
-    const newTime = percentage * duration.value;
+    const newTime = percentage * playerStore.duration;
 
-    audioRef.value.currentTime = newTime;
+    playerStore.seek(newTime);
 };
 
 const overlay = useOverlay();
 const openPlayerSlideover = async () => {
-    console.log('Opening player slideover');
-    const slideover = overlay.create(PodcastPlayerSlideover);
+
+    const slideover = overlay.create(PodcastPlayerSlideover, {
+        props: {
+            episode: playerStore.currentEpisode
+        }
+    });
     await slideover.open();
 };
 </script>
@@ -92,13 +94,13 @@ const openPlayerSlideover = async () => {
                         {{ playerStore.currentEpisode.title }}
                     </h3>
                     <p class="text-xs text-gray-500 dark:text-gray-400">
-                        {{ formatTime(currentTime) }} / {{ formatTime(duration) }}
+                        {{ formatTime(playerStore.currentTime) }} / {{ formatTime(playerStore.duration) }}
                     </p>
                 </div>
 
                 <!-- Play/Pause button -->
                 <UButton :icon="playerStore.isPlaying ? 'i-heroicons-pause' : 'i-heroicons-play'" color="primary"
-                    size="xl" class="shrink-0 rounded-full" @click="playerStore.togglePlayPause()" />
+                    size="xl" class="shrink-0 rounded-full" @click="playerStore.togglePlayPause()" @click.stop />
             </div>
         </div>
     </div>
