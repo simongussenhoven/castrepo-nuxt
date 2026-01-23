@@ -31,6 +31,9 @@ export default defineNuxtConfig({
         '@nuxtjs/supabase',
         '@vueuse/nuxt'
     ],
+    pinia: {
+        storesDirs: ['./app/stores/**'],
+    },
     supabase: {
         redirect: false,
         types: './types/database.ts'

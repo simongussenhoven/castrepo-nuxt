@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { usePlayerStore } from '~/stores/playerStore';
 import PodcastPlayerSlideover from './PodcastPlayerSlideover.vue';
 
 const playerStore = usePlayerStore();

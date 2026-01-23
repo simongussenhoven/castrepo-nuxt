@@ -29,6 +29,7 @@
 <script setup lang="ts">
 import { useDebounceFn } from '@vueuse/core';
 import { type PodcastSearchResponse } from '../../types/podcasts';
+import { useSearchStore } from '~/stores/searchStore';
 
 const emit = defineEmits<{ close: [boolean] }>()
 

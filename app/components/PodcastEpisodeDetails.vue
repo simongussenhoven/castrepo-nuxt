@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { usePlayerStore } from '~/stores/playerStore';
 import type { PodcastEpisode } from '~~/types/podcasts';
 
 const props = defineProps<{

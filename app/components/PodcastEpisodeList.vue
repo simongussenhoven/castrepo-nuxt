@@ -93,7 +93,7 @@ const open = async (episode: PodcastEpisode) => {
 </script>
 <template>
     <div class="py-3 pb-32">
-        <PodcastEpisodeItem v-for="episode in allEpisodes" :key="episode.id" :episode="episode" :feedImage
+        <PodcastEpisodeItem v-for="episode in allEpisodes" :key="episode.id" :episode="episode" :feedImage="feedImage"
             @select="open" />
 
         <!-- Loading trigger -->

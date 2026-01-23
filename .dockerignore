@@ -11,4 +11,3 @@ coverage
 .cache
 .temp
 .tmp
-pnpm-lock.yaml

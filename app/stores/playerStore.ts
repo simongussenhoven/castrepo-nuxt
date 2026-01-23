@@ -1,3 +1,4 @@
+import { defineStore } from 'pinia'
 import type { PodcastEpisode } from "~~/types/podcasts";
 
 export const usePlayerStore = defineStore('player', () => {
