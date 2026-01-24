@@ -36,7 +36,7 @@ export default defineNuxtConfig({
     },
     supabase: {
         redirect: false,
-        types: './types/database.ts'
+        types: 'types/database.ts'
     },
     css: ['~/assets/css/main.css'],
     vite: {

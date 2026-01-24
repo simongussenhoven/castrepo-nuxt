@@ -30,6 +30,8 @@ async function loadMore() {
 
     try {
         const oldestEpisode = allEpisodes.value[allEpisodes.value.length - 1]
+        if (!oldestEpisode) return
+
         const since = oldestEpisode.datePublished - 1 // Subtract 1 to exclude the last loaded episode
 
         const response = await $fetch<PodcastEpisodesResponse>('/api/podcasts/getEpisodesByFeedId', {
@@ -60,7 +62,7 @@ onMounted(() => {
 
     const observer = new IntersectionObserver(
         (entries) => {
-            if (entries[0].isIntersecting && hasMore.value && !loading.value) {
+            if (entries[0]?.isIntersecting && hasMore.value && !loading.value) {
                 loadMore()
             }
         },

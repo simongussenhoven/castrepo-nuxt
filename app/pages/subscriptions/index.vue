@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import SubscriptionDeleteModal from '~/components/SubscriptionDeleteModal.vue';
 import type { Database } from '~~/types/database';
 
 definePageMeta({
@@ -8,6 +9,7 @@ definePageMeta({
 const supabase = useSupabaseClient<Database>()
 const user = useSupabaseUser()
 const toast = useToast()
+const overlay = useOverlay()
 
 const subscriptions = ref<Database['public']['Tables']['subscriptions']['Row'][]>([])
 const loading = ref(true)
@@ -44,37 +46,22 @@ async function fetchSubscriptions() {
     }
 }
 
-// Unsubscribe from a podcast
-async function unsubscribe(subscriptionId: string, podcastTitle: string) {
+// Show confirmation modal before unsubscribing
+function confirmUnsubscribe(subscriptionId: string, podcastTitle: string) {
     unsubscribing.value = subscriptionId
+    overlay.create(SubscriptionDeleteModal, {
+        defaultOpen: true,
+        props: {
+            feed: {
+                id: subscriptionId,
+                title: podcastTitle,
 
-    try {
-        const { error } = await supabase
-            .from('subscriptions')
-            .delete()
-            .eq('id', subscriptionId)
-
-        if (error) throw error
-
-        // Remove from local array
-        subscriptions.value = subscriptions.value.filter(s => s.id !== subscriptionId)
-
-        toast.add({
-            title: 'Unsubscribed',
-            description: `You have unsubscribed from ${podcastTitle}.`,
-            color: 'success',
-            icon: 'i-heroicons-check-circle'
-        })
-    } catch (error: any) {
-        toast.add({
-            title: 'Error',
-            description: error.message || 'Failed to unsubscribe',
-            color: 'error',
-            icon: 'i-heroicons-x-circle'
-        })
-    } finally {
-        unsubscribing.value = null
-    }
+            },
+            onConfirm: (id) => {
+                subscriptions.value = subscriptions.value.filter(s => s.id !== id)
+            }
+        }
+    })
 }
 
 // Navigate to podcast feed
@@ -127,30 +114,24 @@ watch(user, () => {
         <!-- Subscriptions grid -->
         <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <UCard v-for="subscription in subscriptions" :key="subscription.id"
-                class="hover:shadow-lg transition-shadow">
-                <div class="flex flex-col h-full">
-                    <div class="flex items-start gap-4 mb-4 cursor-pointer"
-                        @click="goToPodcast(subscription.podcast_id)">
-                        <NuxtImg v-if="subscription.podcast_image" :src="subscription.podcast_image"
-                            :alt="subscription.podcast_title" class="w-20 h-20 rounded-lg object-cover flex-shrink-0"
-                            width="80" height="80" loading="lazy" />
-                        <div class="flex-1 min-w-0">
+                class="hover:shadow-lg transition-shadow cursor-pointer" @click="goToPodcast(subscription.podcast_id)">
+                <div class="flex items-start gap-4">
+                    <NuxtImg v-if="subscription.podcast_image" :src="subscription.podcast_image"
+                        :alt="subscription.podcast_title" class="w-20 h-20 rounded-lg object-cover flex-shrink-0"
+                        width="80" height="80" loading="lazy" />
+                    <div class="flex-1 min-w-0 flex flex-col gap-1">
+                        <div class="flex items-start gap-2">
                             <h3
-                                class="font-semibold text-lg mb-1 line-clamp-2 hover:text-primary-600 transition-colors">
+                                class="font-semibold text-lg line-clamp-2 hover:text-primary-600 transition-colors flex-1">
                                 {{ subscription.podcast_title }}
                             </h3>
-                            <p class="text-sm text-gray-500 dark:text-gray-400">
-                                Subscribed {{ new Date(subscription.created_at).toLocaleDateString() }}
-                            </p>
+                            <UButton icon="i-heroicons-trash" color="neutral" variant="ghost" size="sm"
+                                :loading="unsubscribing === subscription.id"
+                                @click.stop="confirmUnsubscribe(subscription.id, subscription.podcast_title)" />
                         </div>
-                    </div>
-
-                    <div class="mt-auto flex gap-2">
-                        <UButton label="View Podcast" icon="i-heroicons-arrow-right" color="primary" variant="outline"
-                            class="flex-1" @click="goToPodcast(subscription.podcast_id)" />
-                        <UButton icon="i-heroicons-trash" color="neutral" variant="outline"
-                            :loading="unsubscribing === subscription.id"
-                            @click="unsubscribe(subscription.id, subscription.podcast_title)" />
+                        <p class="text-sm text-gray-500 dark:text-gray-400">
+                            Subscribed {{ new Date(subscription.created_at).toLocaleDateString() }}
+                        </p>
                     </div>
                 </div>
             </UCard>

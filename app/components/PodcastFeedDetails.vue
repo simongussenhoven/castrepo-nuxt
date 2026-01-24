@@ -17,20 +17,22 @@ const { isSubscribed, loading, toggleSubscription } = useSubscription(podcastDat
 </script>
 
 <template>
-    <UCard>
-        <template #header>
-            <div class="flex items-center justify-between gap-3">
-                <div class="flex items-center gap-3">
-                    <NuxtImg v-if="podcast.image" :src="podcast.image" alt="Podcast Cover Image"
-                        class="w-24 h-24 rounded-lg object-cover mb-4" width="96" height="96" loading="lazy" />
-                    <h1 class="text-4xl font-bold">{{ podcast.title }}</h1>
+    <div
+        class="relative overflow-hidden rounded-xl bg-gradient-to-br from-primary-50 to-primary-100 dark:from-primary-950 dark:to-primary-900 p-8 mb-8 shadow-lg">
+        <div class="flex flex-col md:flex-row items-start md:items-center gap-6">
+            <NuxtImg v-if="podcast.image" :src="podcast.image" alt="Podcast Cover Image"
+                class="w-40 h-40 md:w-48 md:h-48 rounded-xl object-cover shadow-xl ring-4 ring-white/50 dark:ring-gray-800/50"
+                width="192" height="192" loading="lazy" />
+            <div class="flex-1 space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+                    <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white">{{ podcast.title }}</h1>
+                    <UButton :label="isSubscribed ? 'Unsubscribe' : 'Subscribe'"
+                        :icon="isSubscribed ? 'i-heroicons-check' : 'i-heroicons-plus'"
+                        :color="isSubscribed ? 'neutral' : 'primary'" :variant="isSubscribed ? 'outline' : 'solid'"
+                        size="lg" :loading="loading" @click="toggleSubscription" class="shrink-0" />
                 </div>
-                <UButton :label="isSubscribed ? 'Unsubscribe' : 'Subscribe'"
-                    :icon="isSubscribed ? 'i-heroicons-check' : 'i-heroicons-plus'"
-                    :color="isSubscribed ? 'neutral' : 'primary'" :variant="isSubscribed ? 'outline' : 'solid'"
-                    size="lg" :loading="loading" @click="toggleSubscription" />
+                <p class="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">{{ podcast.description }}</p>
             </div>
-        </template>
-        <p>{{ podcast.description }}</p>
-    </UCard>
+        </div>
+    </div>
 </template>

@@ -27,7 +27,7 @@ export const useSubscription = (podcast: Ref<PodcastData> | ComputedRef<PodcastD
             .select('id')
             .eq('user_id', user.value.sub)
             .eq('podcast_id', unref(podcast).id)
-            .single()
+            .maybeSingle()
 
         if (!error && data) {
             isSubscribed.value = true
