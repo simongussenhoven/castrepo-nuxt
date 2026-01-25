@@ -77,7 +77,7 @@ const openPlayerSlideover = async () => {
     <div v-if="playerStore.currentEpisode" @click="openPlayerSlideover"
         class="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 shadow-lg z-50">
         <!-- Progress bar -->
-        <div class="h-1 bg-gray-200 dark:bg-gray-700 cursor-pointer hover:h-2 transition-all" @click="seek">
+        <div class="h-1 bg-gray-200 dark:bg-gray-700 cursor-pointer hover:h-2 transition-all" @click.stop="seek">
             <div class="h-full bg-blue-600 transition-all" :style="{ width: `${progress}%` }"></div>
         </div>
 

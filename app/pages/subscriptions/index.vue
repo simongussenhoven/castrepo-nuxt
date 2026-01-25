@@ -13,7 +13,6 @@ const overlay = useOverlay()
 
 const subscriptions = ref<Database['public']['Tables']['subscriptions']['Row'][]>([])
 const loading = ref(true)
-const unsubscribing = ref<string | null>(null)
 
 // Fetch user's subscriptions
 async function fetchSubscriptions() {
@@ -48,7 +47,6 @@ async function fetchSubscriptions() {
 
 // Show confirmation modal before unsubscribing
 function confirmUnsubscribe(subscriptionId: string, podcastTitle: string) {
-    unsubscribing.value = subscriptionId
     overlay.create(SubscriptionDeleteModal, {
         defaultOpen: true,
         props: {
@@ -57,8 +55,10 @@ function confirmUnsubscribe(subscriptionId: string, podcastTitle: string) {
                 title: podcastTitle,
 
             },
-            onConfirm: (id) => {
-                subscriptions.value = subscriptions.value.filter(s => s.id !== id)
+            onConfirm: (id?: string) => {
+                if (id) {
+                    subscriptions.value = subscriptions.value.filter(s => s.id !== id)
+                }
             }
         }
     })
@@ -126,7 +126,6 @@ watch(user, () => {
                                 {{ subscription.podcast_title }}
                             </h3>
                             <UButton icon="i-heroicons-trash" color="neutral" variant="ghost" size="sm"
-                                :loading="unsubscribing === subscription.id"
                                 @click.stop="confirmUnsubscribe(subscription.id, subscription.podcast_title)" />
                         </div>
                         <p class="text-sm text-gray-500 dark:text-gray-400">

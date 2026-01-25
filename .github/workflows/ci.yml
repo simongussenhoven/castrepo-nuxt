@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    env:
+      NUXT_PUBLIC_SUPABASE_URL: ${{ secrets.NUXT_PUBLIC_SUPABASE_URL }}
+      NUXT_PUBLIC_SUPABASE_KEY: ${{ secrets.NUXT_PUBLIC_SUPABASE_KEY }}
+      NUXT_PCI_API_KEY: ${{ secrets.NUXT_PCI_API_KEY }}
+      NUXT_PCI_API_SECRET: ${{ secrets.NUXT_PCI_API_SECRET }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Run linter
+        run: pnpm run lint
+
+      - name: Run tests
+        run: pnpm run test
+
+      - name: Build application
+        run: pnpm run build
+
+  docker-build:
+    runs-on: self-hosted
+    needs: build
+
+    env:
+      NUXT_PUBLIC_SUPABASE_URL: ${{ secrets.NUXT_PUBLIC_SUPABASE_URL }}
+      NUXT_PUBLIC_SUPABASE_KEY: ${{ secrets.NUXT_PUBLIC_SUPABASE_KEY }}
+      NUXT_PCI_API_KEY: ${{ secrets.NUXT_PCI_API_KEY }}
+      NUXT_PCI_API_SECRET: ${{ secrets.NUXT_PCI_API_SECRET }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker compose -f docker-compose.yml build
+
+      - name: Start services
+        run: docker compose -f docker-compose.yml up -d
+
+      - name: Health check
+        run: sleep 10 && docker compose ps
+
+      - name: Cleanup
+        if: always()
+        run: docker compose -f docker-compose.yml down
