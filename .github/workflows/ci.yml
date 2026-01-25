@@ -31,6 +31,9 @@ jobs:
           node-version: "20"
           cache: "pnpm"
 
+      - name: Set Node memory limit
+        run: echo "NODE_OPTIONS=--max-old-space-size=512" >> $GITHUB_ENV
+
       - name: Install dependencies
         run: pnpm install
 
