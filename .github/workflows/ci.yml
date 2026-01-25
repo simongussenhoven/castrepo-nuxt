@@ -11,6 +11,7 @@ jobs:
     runs-on: self-hosted
 
     env:
+      NODE_OPTIONS: --max-old-space-size=512
       NUXT_PUBLIC_SUPABASE_URL: ${{ secrets.NUXT_PUBLIC_SUPABASE_URL }}
       NUXT_PUBLIC_SUPABASE_KEY: ${{ secrets.NUXT_PUBLIC_SUPABASE_KEY }}
       NUXT_PCI_API_KEY: ${{ secrets.NUXT_PCI_API_KEY }}
@@ -30,9 +31,6 @@ jobs:
         with:
           node-version: "20"
           cache: "pnpm"
-
-      - name: Set Node memory limit
-        run: echo "NODE_OPTIONS=--max-old-space-size=512" >> $GITHUB_ENV
 
       - name: Install dependencies
         run: pnpm install
