@@ -11,9 +11,6 @@ export default defineNuxtConfig({
         defaults: {
             weights: [400],
             styles: ['normal']
-        },
-        experimental: {
-            processCSSVariables: true
         }
     },
     runtimeConfig: {

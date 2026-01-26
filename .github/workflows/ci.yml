@@ -12,7 +12,7 @@ jobs:
 
     env:
       NODE_OPTIONS: --max-old-space-size=512
-      NUXT_FONTS_DISABLED: true
+      NODE_TLS_REJECT_UNAUTHORIZED: 0
       NUXT_PUBLIC_SUPABASE_URL: ${{ secrets.NUXT_PUBLIC_SUPABASE_URL }}
       NUXT_PUBLIC_SUPABASE_KEY: ${{ secrets.NUXT_PUBLIC_SUPABASE_KEY }}
       NUXT_PCI_API_KEY: ${{ secrets.NUXT_PCI_API_KEY }}
@@ -35,6 +35,11 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install
+
+      - name: Warm up network connectivity
+        run: |
+          curl -s https://fonts.googleapis.com/css2?family=Inter > /dev/null || true
+          curl -s https://fonts.gstatic.com > /dev/null || true
 
       - name: Run tests
         run: pnpm run test
