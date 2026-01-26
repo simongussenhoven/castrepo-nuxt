@@ -5,12 +5,15 @@ export default defineNuxtConfig({
     compatibilityDate: '2025-07-15',
     fonts: {
         families: [
-            { name: 'Inter', provider: 'google' }, // example
+            { name: 'Inter', provider: 'google' },
             { name: 'Roboto', provider: 'google', weights: [400, 700] },
         ],
         defaults: {
             weights: [400],
             styles: ['normal']
+        },
+        experimental: {
+            processCSSVariables: true
         }
     },
     runtimeConfig: {
