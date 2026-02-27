@@ -1,20 +1,23 @@
 import { Capacitor } from '@capacitor/core'
+import { Preferences } from '@capacitor/preferences'
 
 /**
- * On native platforms (Capacitor), the @nuxtjs/supabase module's auth state
- * listener calls getClaims() which can fail in the WebView's cookie-based
- * session context, causing user.value to be reset to null.
+ * On native platforms (Capacitor), the @nuxtjs/supabase module uses
+ * createBrowserClient (@supabase/ssr) which stores auth tokens in cookies.
+ * In Capacitor's WebView, these cookies may be treated as session cookies
+ * and cleared when the app is killed — causing the user to be logged out.
  *
- * The module's onAuthStateChange handler and page:start hook both call
- * getClaims() asynchronously. When getClaims returns null claims on native,
- * the module sets user.value = null — overriding any correct value we set.
+ * Additionally, the module's getClaims() calls can fail in the WebView,
+ * causing user.value to be reset to null even during an active session.
  *
  * This plugin:
- * 1. Decodes the JWT access_token ourselves (bypassing getClaims)
- * 2. Tracks the active claims as the source of truth
- * 3. Watches for external nullification of user (by the module's getClaims)
- *    and restores the correct value
+ * 1. Persists the session to Capacitor Preferences on every auth state change
+ * 2. Restores the session from Preferences on app start (via setSession)
+ * 3. Decodes JWT claims ourselves (bypassing getClaims)
+ * 4. Guards against the module nullifying user.value via a watcher
  */
+
+const STORAGE_KEY = 'sb-native-session'
 
 function decodeJwtClaims(accessToken: string) {
     try {
@@ -26,7 +29,7 @@ function decodeJwtClaims(accessToken: string) {
     }
 }
 
-export default defineNuxtPlugin(() => {
+export default defineNuxtPlugin(async () => {
     if (!Capacitor.isNativePlatform()) return
 
     const supabase = useSupabaseClient()
@@ -35,28 +38,33 @@ export default defineNuxtPlugin(() => {
     // Track the active claims as our source of truth on native
     let activeClaims: ReturnType<typeof useSupabaseUser>['value'] = null
 
-    function setUserFromSession(session: { access_token: string } | null) {
+    async function persistSession(session: { access_token: string; refresh_token: string } | null) {
         if (session?.access_token) {
             activeClaims = decodeJwtClaims(session.access_token)
+            await Preferences.set({
+                key: STORAGE_KEY,
+                value: JSON.stringify({
+                    access_token: session.access_token,
+                    refresh_token: session.refresh_token
+                })
+            })
         } else {
             activeClaims = null
+            await Preferences.remove({ key: STORAGE_KEY })
         }
         user.value = activeClaims
     }
 
-    // Sync the current session on app start
-    supabase.auth.getSession().then(({ data: { session } }) => {
-        setUserFromSession(session)
-    })
+    // ── 1. Set up guards FIRST (synchronous, before any async work) ──
 
-    // Listen for all auth state changes
+    // Listen for all auth state changes (login, logout, token refresh)
     supabase.auth.onAuthStateChange((_event, session) => {
-        setUserFromSession(session)
+        persistSession(session)
     })
 
     // Guard against the module's getClaims() nullifying the user.
     // When getClaims fails on native, the module sets user to null even though
-    // we have a valid session. This watcher detects that and restores the user.
+    // we have a valid session. This watcher detects that and restores it.
     watch(user, (newVal) => {
         if (newVal === null && activeClaims) {
             nextTick(() => {
@@ -64,4 +72,33 @@ export default defineNuxtPlugin(() => {
             })
         }
     })
+
+    // ── 2. Now restore the session (async) ──
+
+    const { value: stored } = await Preferences.get({ key: STORAGE_KEY })
+    if (stored) {
+        try {
+            const { access_token, refresh_token } = JSON.parse(stored)
+            const { data, error } = await supabase.auth.setSession({ access_token, refresh_token })
+            if (error || !data.session) {
+                // Tokens expired or invalid — clear storage
+                await Preferences.remove({ key: STORAGE_KEY })
+                activeClaims = null
+                user.value = null
+            } else {
+                // setSession succeeded — set user immediately
+                // (onAuthStateChange also fires, but the module's getClaims may null it)
+                activeClaims = decodeJwtClaims(data.session.access_token)
+                user.value = activeClaims
+            }
+        } catch {
+            await Preferences.remove({ key: STORAGE_KEY })
+        }
+    } else {
+        // No stored session; check if supabase has one (e.g. cookies persisted)
+        const { data: { session } } = await supabase.auth.getSession()
+        if (session) {
+            await persistSession(session)
+        }
+    }
 })
