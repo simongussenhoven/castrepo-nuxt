@@ -43,7 +43,13 @@ export default defineNuxtConfig({
     },
     supabase: {
         redirect: false,
-        types: 'types/database.ts'
+        types: 'types/database.ts',
+        cookieOptions: {
+            // Must be false: Capacitor dev loads the WebView over HTTP
+            // (http://10.0.2.2:3000), and Secure cookies are silently
+            // ignored on non-HTTPS origins — breaking auth session storage.
+            secure: false,
+        },
     },
     css: ['~/assets/css/main.css'],
     vite: {

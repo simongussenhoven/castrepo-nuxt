@@ -64,12 +64,24 @@ export default defineNuxtPlugin(async () => {
 
     // Guard against the module's getClaims() nullifying the user.
     // When getClaims fails on native, the module sets user to null even though
-    // we have a valid session. This watcher detects that and restores it.
-    watch(user, (newVal) => {
+    // we have a valid session. This watcher detects that and restores it,
+    // re-establishing the Supabase client session so queries include the auth token.
+    watch(user, async (newVal) => {
         if (newVal === null && activeClaims) {
-            nextTick(() => {
-                user.value = activeClaims
-            })
+            // Restore user.value immediately so the UI stays consistent
+            user.value = activeClaims
+
+            // Re-establish the Supabase client session from Preferences
+            // so that getSession() returns the session and queries are authenticated
+            const { value: stored } = await Preferences.get({ key: STORAGE_KEY })
+            if (stored) {
+                try {
+                    const { access_token, refresh_token } = JSON.parse(stored)
+                    await supabase.auth.setSession({ access_token, refresh_token })
+                } catch {
+                    // ignore — session will be refreshed on next auth state change
+                }
+            }
         }
     })
 

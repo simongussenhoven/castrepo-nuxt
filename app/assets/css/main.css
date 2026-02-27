@@ -1,6 +1,11 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
 
+/* Use class-based dark mode so @nuxtjs/color-mode's .dark class controls it,
+   instead of Tailwind v4's default @media (prefers-color-scheme: dark) which
+   doesn't work reliably in Capacitor WebViews. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 html,
 body,
 .app {
