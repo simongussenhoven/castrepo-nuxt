@@ -4,28 +4,47 @@ import PodcastEpisodeSlideover from './PodcastEpisodeSlideover.vue';
 const props = defineProps<{
     id: number;
     feedImage?: string;
+    offlineMode?: boolean;
 }>();
 
+const cache = useOfflineCache()
 const allEpisodes = ref<PodcastEpisode[]>([])
 const loadingMore = ref(false)
 const hasMore = ref(true)
 const loadMoreTrigger = ref<HTMLElement | null>(null)
+const isFromCache = ref(false)
 
-// Use Nuxt's useFetch at the top level (no await = component stays synchronous).
-// This integrates properly with Nuxt's lifecycle across web and Capacitor WebViews.
-const { data: initialData, status, error: fetchError } = useFetch<PodcastEpisodesResponse>(
-    '/api/podcasts/getEpisodesByFeedId',
-    {
-        query: { id: props.id, max: 20 },
-        key: `episodes-${props.id}`,
-    }
-)
+// If offline, load from cache instead of fetching
+const { data: initialData, status, error: fetchError } = props.offlineMode
+    ? { data: ref(null), status: ref('idle' as const), error: ref(null) }
+    : useFetch<PodcastEpisodesResponse>(
+        '/api/podcasts/getEpisodesByFeedId',
+        {
+            query: { id: props.id, max: 20 },
+            key: `episodes-${props.id}`,
+        }
+    )
+
+// Load cached episodes when in offline mode
+if (props.offlineMode) {
+    onMounted(async () => {
+        const cached = await cache.getEpisodes(props.id)
+        if (cached) {
+            allEpisodes.value = cached
+            isFromCache.value = true
+            hasMore.value = false // can't load more offline
+        }
+    })
+}
 
 // Sync initial data into our mutable list (needed for infinite-scroll appending)
-watch(initialData, (data) => {
+watch(initialData, async (data) => {
     if (data?.items) {
         allEpisodes.value = data.items
         hasMore.value = data.items.length >= 20
+
+        // Cache episodes for offline use
+        await cache.setEpisodes(props.id, data.items)
     }
 }, { immediate: true })
 
@@ -33,7 +52,7 @@ const loading = computed(() => status.value === 'pending' || loadingMore.value)
 
 // Load more episodes
 async function loadMore() {
-    if (loadingMore.value || !hasMore.value || allEpisodes.value.length === 0) return
+    if (loadingMore.value || !hasMore.value || allEpisodes.value.length === 0 || props.offlineMode) return
 
     loadingMore.value = true
 
@@ -54,6 +73,9 @@ async function loadMore() {
         if (response?.items && response.items.length > 0) {
             allEpisodes.value.push(...response.items)
             hasMore.value = response.items.length >= 20
+
+            // Update cache with all loaded episodes
+            await cache.setEpisodes(props.id, allEpisodes.value)
         } else {
             hasMore.value = false
         }

@@ -10,11 +10,14 @@ const supabase = useSupabaseClient<Database>()
 const user = useSupabaseUser()
 const toast = useToast()
 const overlay = useOverlay()
+const { isOnline } = useNetworkStatus()
+const cache = useOfflineCache()
 
 const subscriptions = ref<Database['public']['Tables']['subscriptions']['Row'][]>([])
 const loading = ref(true)
+const isFromCache = ref(false)
 
-// Fetch user's subscriptions
+// Fetch user's subscriptions with cache-first strategy
 async function fetchSubscriptions() {
     if (!user.value?.sub) {
         loading.value = false
@@ -22,6 +25,18 @@ async function fetchSubscriptions() {
     }
 
     loading.value = true
+    isFromCache.value = false
+
+    // If offline, load from cache immediately
+    if (!isOnline.value) {
+        const cached = await cache.getSubscriptions()
+        if (cached) {
+            subscriptions.value = cached
+            isFromCache.value = true
+        }
+        loading.value = false
+        return
+    }
 
     try {
         const { data, error } = await supabase
@@ -33,13 +48,29 @@ async function fetchSubscriptions() {
         if (error) throw error
 
         subscriptions.value = data || []
+
+        // Cache the fresh data
+        await cache.setSubscriptions(subscriptions.value)
     } catch (error: any) {
-        toast.add({
-            title: 'Error',
-            description: error.message || 'Failed to load subscriptions',
-            color: 'error',
-            icon: 'i-heroicons-x-circle'
-        })
+        // On network error, try loading from cache
+        const cached = await cache.getSubscriptions()
+        if (cached && cached.length > 0) {
+            subscriptions.value = cached
+            isFromCache.value = true
+            toast.add({
+                title: 'Offline',
+                description: 'Showing cached subscriptions.',
+                color: 'warning',
+                icon: 'i-heroicons-signal-slash'
+            })
+        } else {
+            toast.add({
+                title: 'Error',
+                description: error.message || 'Failed to load subscriptions',
+                color: 'error',
+                icon: 'i-heroicons-x-circle'
+            })
+        }
     } finally {
         loading.value = false
     }
@@ -55,9 +86,11 @@ function confirmUnsubscribe(subscriptionId: string, podcastTitle: string) {
                 title: podcastTitle,
 
             },
-            onConfirm: (id?: string) => {
+            onConfirm: async (id?: string) => {
                 if (id) {
                     subscriptions.value = subscriptions.value.filter(s => s.id !== id)
+                    // Update cache after deletion
+                    await cache.setSubscriptions(subscriptions.value)
                 }
             }
         }
@@ -78,10 +111,24 @@ onMounted(() => {
 watch(user, () => {
     fetchSubscriptions()
 })
+
+// Refetch when coming back online
+watch(isOnline, (online) => {
+    if (online && isFromCache.value) {
+        fetchSubscriptions()
+    }
+})
 </script>
 
 <template>
     <div class="container mx-auto px-4 py-8 pt-24">
+        <!-- Offline / cached data banner -->
+        <div v-if="isFromCache"
+            class="mb-4 flex items-center gap-2 rounded-lg bg-amber-50 dark:bg-amber-900/30 px-4 py-3 text-amber-800 dark:text-amber-200 text-sm">
+            <UIcon name="i-heroicons-signal-slash" class="h-5 w-5 shrink-0" />
+            <span>You're offline — showing cached subscriptions.</span>
+        </div>
+
         <div class="mb-8">
             <h1 class="text-4xl font-bold mb-2">My Subscriptions</h1>
             <p class="text-gray-600 dark:text-gray-400">
