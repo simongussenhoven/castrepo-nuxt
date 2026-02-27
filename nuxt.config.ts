@@ -38,6 +38,9 @@ export default defineNuxtConfig({
     pinia: {
         storesDirs: ['./app/stores/**'],
     },
+    colorMode: {
+        preference: 'dark',
+    },
     supabase: {
         redirect: false,
         types: 'types/database.ts'

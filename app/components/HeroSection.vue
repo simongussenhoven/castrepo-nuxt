@@ -1,5 +1,5 @@
 <template>
-    <section class="min-h-[80vh] flex items-center bg-gradient-to-br from-indigo-500 to-purple-600 text-white py-8">
+    <section class="min-h-screen flex items-center bg-linear-to-br from-indigo-500 to-purple-600 text-white py-8">
         <div class="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div class="text-center md:text-left">
                 <h1 class="text-4xl md:text-6xl font-bold mb-4 leading-tight">
