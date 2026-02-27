@@ -55,7 +55,6 @@ const handleLogin = async () => {
                 color: 'success',
                 icon: 'i-heroicons-check-circle'
             })
-            // User will be automatically set by useSupabaseUser()
             // Emit success to close the modal
             emit('success')
         }
