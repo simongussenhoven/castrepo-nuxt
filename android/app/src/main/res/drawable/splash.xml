@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Replaces the default Capacitor splash.png. Used by AppTheme.NoActionBarLaunch
+     as the window background shown by Android before the app initializes. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Dark background matching app's slate-900 -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#0f172a" />
+        </shape>
+    </item>
+    <!-- Centered gradient circle -->
+    <item
+        android:gravity="center"
+        android:width="120dp"
+        android:height="120dp">
+        <shape android:shape="oval">
+            <gradient
+                android:startColor="#6366f1"
+                android:endColor="#9333ea"
+                android:angle="135" />
+            <size
+                android:width="120dp"
+                android:height="120dp" />
+        </shape>
+    </item>
+    <!-- Centered headphones icon -->
+    <item
+        android:gravity="center"
+        android:width="64dp"
+        android:height="64dp"
+        android:drawable="@drawable/ic_headphones" />
+</layer-list>

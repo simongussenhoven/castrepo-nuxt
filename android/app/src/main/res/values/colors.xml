@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#6366f1</color>
+    <color name="colorPrimaryDark">#0f172a</color>
+    <color name="colorAccent">#facc15</color>
+    <color name="splash_background">#0f172a</color>
+    <color name="splash_text">#facc15</color>
+    <color name="splash_subtitle">#94a3b8</color>
+    <color name="splash_icon_start">#6366f1</color>
+    <color name="splash_icon_end">#9333ea</color>
+</resources>
