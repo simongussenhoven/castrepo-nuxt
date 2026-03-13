@@ -59,7 +59,7 @@ watch(isOnline, async (online) => {
         <UApp>
             <!-- Global offline banner -->
             <div v-if="!isOnline"
-                class="fixed top-0 inset-x-0 z-50 flex items-center justify-center gap-2 bg-amber-500 px-4 py-2 text-white text-sm font-medium">
+                class="fixed top-0 inset-x-0 z-50 flex items-center justify-center gap-2 px-4 py-2 text-white text-sm font-medium">
                 <UIcon name="i-heroicons-signal-slash" class="h-4 w-4" />
                 You're offline
             </div>

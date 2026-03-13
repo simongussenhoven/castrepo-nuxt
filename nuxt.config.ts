@@ -21,7 +21,7 @@ export default defineNuxtConfig({
             supabaseKey: process.env.NUXT_PUBLIC_SUPABASE_KEY,
         },
     },
-    devtools: { enabled: true },
+    devtools: { enabled: !process.env.CAPACITOR },
     devServer: {
         host: '0.0.0.0',
         port: 3000,
