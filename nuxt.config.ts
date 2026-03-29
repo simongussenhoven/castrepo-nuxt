@@ -16,10 +16,6 @@ export default defineNuxtConfig({
     runtimeConfig: {
         pciApiKey: process.env.NUXT_PCI_API_KEY,
         pciApiSecret: process.env.NUXT_PCI_API_SECRET,
-        public: {
-            supabaseUrl: process.env.NUXT_PUBLIC_SUPABASE_URL,
-            supabaseKey: process.env.NUXT_PUBLIC_SUPABASE_KEY,
-        },
     },
     devtools: { enabled: true },
     devServer: {
